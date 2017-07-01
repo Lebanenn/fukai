@@ -1,0 +1,84 @@
+on_use = function(itemstack, player, pointed_thing) -- A placer dans damage per seconds
+  local player = minetest.get_player_by_name("singleplayer")
+  local inv = player:get_inventory():get_stack("main",1):get_name()
+  if inv=="fukai:mask" then
+    --dam=0
+    minetest.chat_send_all("0")
+  end
+  if inv ~= "fukai:mask" then
+    --dam=4*2
+    minetest.chat_send_all("Damage")
+  end
+  minetest.chat_send_all(inv)
+  end,
+
+
+  minetest.override_item("fukai:air", {
+    damage_per_second=0,
+  })
+
+
+  local a = 100
+  local t = 0
+  local zid = -1
+  local c = "psi.png"
+  local timer = 0
+
+  local function scuba()
+    local players = minetest.get_connected_players()
+    if #players == 0 then return end
+    for i,player in ipairs(players) do
+      local b = player:get_breath()
+      if b < 10 then
+        if zid == -1 then
+          zid = player:hud_add( {
+            hud_elem_type = "statbar",
+            position = {x=0.52,y=0.88},
+            offset = {x=0, y=0},
+            name = "scuba air gauge",
+            text = c,
+            number = a,
+            alignment = {x=-1,y=-1},
+            scale = {x=1, y=1},
+          } )
+        else
+          player:hud_change(zid, "number", a)
+        end --if
+        a=a-1
+        if a > 0 then player:set_breath(9) end
+      else
+        if zid ~= -1 then
+          player:hud_remove(zid)
+          zid = -1
+        end --if
+        t=t+1
+        if t > 300 then --5 minute recharge
+          t=0
+          a=100
+          --print ("tank recharged")
+        end --if
+      end --if
+    end --for
+    --print (zid,t)
+  end --function
+
+    minetest.after(3, function()
+      minetest.register_globalstep(function(dtime)
+        timer = timer + dtime
+        if timer < 1 then return end
+        timer = 0
+        scuba()
+      end) --function
+      end) --function
+
+
+      minetest.after(1, function(player)
+        local player = minetest.get_player_by_name("singleplayer")
+        local inv = player:get_inventory():get_stack("main",1):get_name()
+        if inv=="fukai:mask" then
+          local int hp = player:get_hp()
+          player:set_hp(hp+2)
+          minetest.chat_send_all("0")
+        end
+        minetest.chat_send_all(inv)
+      end)

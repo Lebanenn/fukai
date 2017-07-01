@@ -1,0 +1,7 @@
+local fukai_path = minetest.get_modpath("fukai")
+dofile(fukai_path.."/poison_dirt.lua")
+dofile(fukai_path.."/poison_tree.lua")
+dofile(fukai_path.."/poison_acid.lua")
+dofile(fukai_path.."/poison_flore.lua")
+dofile(fukai_path.."/poison_air.lua")
+dofile(fukai_path.."/poison_other_tree.lua")
